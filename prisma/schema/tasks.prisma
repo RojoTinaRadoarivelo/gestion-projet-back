@@ -1,0 +1,43 @@
+model Tasks {
+    id         String     @id @default(uuid()) @db.Uuid
+    name       String     @unique @db.VarChar(120)
+    duration   String?    @db.VarChar(120)
+    status_id  String     @db.Uuid
+    status     TaskStatus @relation(fields: [status_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    project_id String     @db.Uuid
+    project    Projects   @relation(fields: [project_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    sprint_id  String?    @db.Uuid
+    sprint     Sprints?   @relation(fields: [sprint_id], references: [id], onUpdate: Cascade, onDelete: SetNull)
+    createdAt  DateTime   @default(now())
+    updatedAt  DateTime?  @updatedAt
+}
+
+model TaskStatus {
+    id        String    @id @default(uuid()) @db.Uuid
+    status    String    @unique @db.VarChar(120)
+    createdAt DateTime  @default(now())
+    updatedAt DateTime? @updatedAt
+
+    Tasks Tasks[]
+}
+
+model Sprints {
+    id        String       @id @default(uuid()) @db.Uuid
+    name      String       @unique @db.VarChar(120)
+    duration  String       @db.VarChar(120)
+    status_id String       @db.Uuid
+    status    SprintStatus @relation(fields: [status_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    createdAt DateTime     @default(now())
+    updatedAt DateTime?    @updatedAt
+
+    Tasks Tasks[]
+}
+
+model SprintStatus {
+    id        String    @id @default(uuid()) @db.Uuid
+    status    String    @unique @db.VarChar(120)
+    createdAt DateTime  @default(now())
+    updatedAt DateTime? @updatedAt
+
+    Sprint Sprints[]
+}
