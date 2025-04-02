@@ -4,8 +4,34 @@ model Users {
     password  String    @db.VarChar(120)
     userName  String?   @db.VarChar(120)
     avatar    String?   @db.VarChar(250)
+    isBlocked Boolean   @default(false) @db.Boolean
     createdAt DateTime  @default(now())
     updatedAt DateTime? @updatedAt
 
     HasProject HasProject[]
+    UserGroups UserGroups[]
+    Groups     Groups[]
+    Projects   Projects[]
+}
+
+model Groups {
+    id        String    @id @default(uuid()) @db.Uuid
+    name      String    @unique @db.VarChar(250)
+    admin     String?   @db.Uuid
+    createdBy Users?    @relation(fields: [admin], references: [id], onUpdate: Cascade, onDelete: SetNull)
+    createdAt DateTime  @default(now())
+    updatedAt DateTime? @updatedAt
+
+    UserGroups UserGroups[]
+    HasProject HasProject[]
+}
+
+model UserGroups {
+    id        String    @id @default(uuid()) @db.Uuid
+    user_id   String    @db.Uuid
+    user      Users     @relation(fields: [user_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    group_id  String    @db.Uuid
+    group     Groups    @relation(fields: [group_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    createdAt DateTime  @default(now())
+    updatedAt DateTime? @updatedAt
 }

@@ -4,6 +4,8 @@ model Projects {
     description String?   @db.Text
     tag         String?   @db.VarChar(120)
     logo        String?   @db.VarChar(250)
+    admin       String?   @db.Uuid
+    createdBy   Users?    @relation(fields: [admin], references: [id], onUpdate: Cascade, onDelete: SetNull)
     createdAt   DateTime  @default(now())
     updatedAt   DateTime? @updatedAt
 
@@ -15,6 +17,8 @@ model HasProject {
     id         String    @id @default(uuid()) @db.Uuid
     user_id    String?   @db.Uuid
     user       Users?    @relation(fields: [user_id], references: [id], onUpdate: Cascade, onDelete: SetNull)
+    group_id   String?   @db.Uuid
+    group      Groups?   @relation(fields: [group_id], references: [id], onUpdate: Cascade, onDelete: SetNull)
     role_id    String    @db.Uuid
     role       UserRoles @relation(fields: [role_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
     project_id String?   @db.Uuid
@@ -31,4 +35,24 @@ model UserRoles {
     updatedAt   DateTime? @updatedAt
 
     HasProject HasProject[]
+    RoleRights RoleRights[]
+}
+
+model Rights {
+    id        String    @id @default(uuid()) @db.Uuid
+    right     String    @unique @db.VarChar(120)
+    createdAt DateTime  @default(now())
+    updatedAt DateTime? @updatedAt
+
+    RoleRights RoleRights[]
+}
+
+model RoleRights {
+    id        String    @id @default(uuid()) @db.Uuid
+    right_id  String    @db.Uuid
+    right     Rights    @relation(fields: [right_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    role_id   String    @db.Uuid
+    role      UserRoles @relation(fields: [role_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    createdAt DateTime  @default(now())
+    updatedAt DateTime? @updatedAt
 }
