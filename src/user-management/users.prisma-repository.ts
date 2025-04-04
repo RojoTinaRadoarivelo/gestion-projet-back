@@ -25,8 +25,17 @@ export class PrismaUserRepository
     },
   ): Promise<Users[]> {
     try {
+      this.selectFields = {
+        id: true,
+        email: true,
+        userName: true,
+        avatar: true,
+        isBlocked: true,
+        createdAt: true,
+        updatedAt: true,
+      };
       const users = await this.usersPrisma.findMany({
-        include: this.selectFields,
+        select: this.selectFields,
         orderBy: options.orderBy,
       });
       if (users) {
@@ -43,7 +52,8 @@ export class PrismaUserRepository
     }
   }
   async FindOne(
-    id: string,
+    id: string | null,
+    showDetail: boolean = false,
     params?: any,
     options?: {
       orderBy: any;
@@ -52,10 +62,33 @@ export class PrismaUserRepository
     },
   ): Promise<Users> {
     try {
+      let searchOptions: any = {};
+      if (params && id == null) {
+        searchOptions = params;
+      } else {
+        searchOptions = { id };
+      }
+      this.selectFields = {
+        email: true,
+        userName: true,
+        avatar: true,
+        createdAt: true,
+        updatedAt: true,
+      };
+      if (showDetail) {
+        this.selectFields = {
+          id: true,
+          email: true,
+          userName: true,
+          avatar: true,
+          createdAt: true,
+          updatedAt: true,
+        };
+      }
+
       const users = await this.usersPrisma.findFirst({
-        where: { id },
-        include: this.selectFields,
-        orderBy: options.orderBy,
+        where: searchOptions,
+        select: this.selectFields,
       });
       if (users) {
         const usersResult: Users = new Users(users);
@@ -80,9 +113,15 @@ export class PrismaUserRepository
             );
           }
 
+          this.selectFields = {
+            email: true,
+            userName: true,
+            avatar: true,
+            createdAt: true,
+          };
           const savingUser = await prisma.users.create({
             data,
-            include: this.selectFields,
+            select: this.selectFields,
           });
           if (savingUser) {
             const newUser = new Users(savingUser);
@@ -109,10 +148,16 @@ export class PrismaUserRepository
             where: { id },
           });
           if (searchUser) {
+            this.selectFields = {
+              email: true,
+              userName: true,
+              avatar: true,
+              isBlocked: true,
+            };
             const updateUser = await prisma.users.update({
               where: { id },
               data,
-              include: this.selectFields,
+              select: this.selectFields,
             });
             if (updateUser) {
               const result = new Users(updateUser);
@@ -134,10 +179,17 @@ export class PrismaUserRepository
             where: { id },
           });
           if (searchUser) {
+            this.selectFields = {
+              email: true,
+              userName: true,
+              avatar: true,
+              createdAt: true,
+              updatedAt: true,
+            };
             const updateUser = await prisma.users.update({
               where: { id },
               data,
-              include: this.selectFields,
+              select: this.selectFields,
             });
             if (updateUser) {
               const result = new Users(updateUser);

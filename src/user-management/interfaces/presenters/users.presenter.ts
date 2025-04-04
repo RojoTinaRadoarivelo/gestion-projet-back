@@ -51,7 +51,7 @@ export class BlockUserPresenter implements Presenter<Users, UserOutputDto> {
     if (data instanceof Users) {
       response = {
         email: data.email,
-        createdAt: dateToString(data.createdAt),
+        updatedAt: dateToString(data.updatedAt),
         avatar: data.avatar ?? '',
         userName: data.userName ?? '',
         isBlocked: data.isBlocked,
@@ -91,7 +91,7 @@ export class UpdateUserPresenter implements Presenter<Users, UserOutputDto> {
     if (data instanceof Users) {
       response = {
         email: data.email,
-        createdAt: dateToString(data.createdAt),
+        updatedAt: dateToString(data.updatedAt),
         avatar: data.avatar ?? '',
         userName: data.userName ?? '',
       };

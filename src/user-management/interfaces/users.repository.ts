@@ -26,7 +26,8 @@ export class UserRepository
     throw new Error('Method not implemented.');
   }
   async FindOne(
-    id: string,
+    id: string | null,
+    showDetail: boolean,
     params?: any,
     options?: {
       orderBy: any;
@@ -36,7 +37,12 @@ export class UserRepository
     persistance?: { method: string },
   ): Promise<Users> {
     if (persistance.method == 'prisma') {
-      return await this._prismaUserRepository.FindOne(id, params, options);
+      return await this._prismaUserRepository.FindOne(
+        id,
+        showDetail,
+        params,
+        options,
+      );
     }
     throw new Error('Method not implemented.');
   }

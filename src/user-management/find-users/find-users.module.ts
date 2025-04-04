@@ -15,5 +15,11 @@ import { DatabaseModule } from 'src/core/database/database.module';
     PrismaUserRepository,
     FindAllUserPresenter,
   ],
+  exports: [
+    FindUsersService,
+    UserRepository,
+    PrismaUserRepository,
+    FindAllUserPresenter,
+  ],
 })
 export class FindUsersModule {}

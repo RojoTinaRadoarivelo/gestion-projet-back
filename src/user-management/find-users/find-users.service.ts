@@ -25,6 +25,7 @@ export class FindUsersService {
           method: 'prisma',
         },
       );
+
       if (
         listUser &&
         Array.isArray(listUser) &&
@@ -60,7 +61,53 @@ export class FindUsersService {
     try {
       const user: Users | HttpException = await this._userRepository.FindOne(
         id,
+        false,
         null,
+        { orderBy: { createdAt: 'asc' } },
+        {
+          method: 'prisma',
+        },
+      );
+
+      if (user && verifyObject<Users>(user, Users)) {
+        response = {
+          statusCode: HttpStatus.OK,
+          message: 'Information about the user.',
+          data: user,
+        };
+        return response;
+      } else {
+        throw user;
+      }
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        response = {
+          statusCode: HttpStatus.NOT_FOUND,
+          message: error.message,
+        };
+      } else if (error instanceof BadRequestException) {
+        response = {
+          statusCode: HttpStatus.BAD_REQUEST,
+          message: error.message,
+        };
+      } else {
+        response = {
+          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+          message: error.message,
+        };
+      }
+
+      return response;
+    }
+  }
+
+  async findOneBy(params: any): Promise<reponsesDTO<Users>> {
+    let response: reponsesDTO<Users>;
+    try {
+      const user: Users | HttpException = await this._userRepository.FindOne(
+        null,
+        true,
+        params,
         { orderBy: { createdAt: 'asc' } },
         {
           method: 'prisma',

@@ -16,7 +16,8 @@ export class UpdateUserOutputDto {
 
 export class UserOutputDto {
   email: string;
-  createdAt: string;
+  updatedAt?: string;
+  createdAt?: string;
   id?: string | null;
   userName?: string | null;
   avatar?: string | null;

@@ -1,7 +1,10 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Post } from '@nestjs/common';
 import { ForgotPasswordService } from './forgot-password.service';
 
-@Controller('forgot-password')
+@Controller('auth')
 export class ForgotPasswordController {
-  constructor(private readonly forgotPasswordService: ForgotPasswordService) {}
+  constructor(private readonly _forgotPasswordService: ForgotPasswordService) {}
+
+  @Post('forgot-password')
+  async ForgotPassword() {}
 }

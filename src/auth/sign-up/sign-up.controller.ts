@@ -1,7 +1,12 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Post } from '@nestjs/common';
 import { SignUpService } from './sign-up.service';
 
-@Controller('sign-up')
+@Controller('auth')
 export class SignUpController {
-  constructor(private readonly signUpService: SignUpService) {}
+  constructor(private readonly _signUpService: SignUpService) {}
+
+  @Post('sign-up')
+  async SignUp() {
+    return await this._signUpService.SendVerificationCode();
+  }
 }
