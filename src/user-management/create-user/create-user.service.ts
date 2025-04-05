@@ -12,6 +12,7 @@ import { reponsesDTO } from 'src/core/utils/interfaces/responses';
 import { UserRepository } from '../interfaces/users.repository';
 import { verifyObject } from 'src/core/utils/class-validation.util';
 import { HttpExceptionUtil } from 'src/core/utils/http-exception.util';
+import { HashPassword } from 'src/core/utils/interfaces/pwd-encryption';
 
 @Injectable()
 export class CreateUserService {
@@ -20,6 +21,9 @@ export class CreateUserService {
   async CreateUser(data: CreateUserDto): Promise<reponsesDTO<Users>> {
     let response: reponsesDTO<Users>;
     try {
+      const hashedPassword = await HashPassword(data.password, 10);
+      data.password = hashedPassword;
+
       const newUser: Users | HttpException = await this._userRepository.Create(
         data,
         null,

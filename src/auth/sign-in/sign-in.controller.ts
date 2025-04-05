@@ -29,10 +29,9 @@ export class SignInController {
         data: { sess_id: signIn.data.sess_id },
         statusCode,
       };
-      return res.json(response);
     } else {
       response = { statusCode, message };
     }
-    return response;
+    return res.status(statusCode).json(response);
   }
 }

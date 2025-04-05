@@ -9,5 +9,6 @@ import { DatabaseModule } from 'src/core/database/database.module';
   imports: [DatabaseModule],
   controllers: [UpdateUserController],
   providers: [UpdateUserService, UserRepository, PrismaUserRepository],
+  exports: [UpdateUserService, UserRepository, PrismaUserRepository],
 })
 export class UpdateUserModule {}

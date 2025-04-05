@@ -21,6 +21,7 @@ export class SignInService {
     let response: reponsesDTO<{ c_id: any; sess_id: any }>;
     const searchUser: reponsesDTO<Users> = await this._userService.findOneBy({
       email: data.email,
+      password: data.password,
     });
     const statusCode = searchUser.statusCode;
     const message = searchUser.message;

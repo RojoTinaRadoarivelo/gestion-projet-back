@@ -72,12 +72,18 @@ export class UserRepository
   }
   async Update(
     id: string,
+    showDetail: boolean,
     data: UpdateUserDto,
     params?: any,
     persistance?: { method: string },
   ): Promise<Users> {
     if (persistance.method == 'prisma') {
-      return await this._prismaUserRepository.Update(id, data, params);
+      return await this._prismaUserRepository.Update(
+        id,
+        showDetail,
+        data,
+        params,
+      );
     }
     throw new Error('Method not implemented.');
   }

@@ -6,6 +6,7 @@ import { PrismaService } from 'src/core/database/prisma-db/prisma.service';
 import { Injectable } from '@nestjs/common';
 import { StatusUserDto } from './interfaces/dtos/status-user.dto';
 import { HttpExceptionUtil } from 'src/core/utils/http-exception.util';
+import { ComparePasswords } from 'src/core/utils/interfaces/pwd-encryption';
 
 @Injectable()
 export class PrismaUserRepository
@@ -63,8 +64,13 @@ export class PrismaUserRepository
   ): Promise<Users> {
     try {
       let searchOptions: any = {};
+      let pwdToTest: string = '';
       if (params && id == null) {
         searchOptions = params;
+        if (searchOptions.password) {
+          pwdToTest = searchOptions.password;
+          delete searchOptions.password;
+        }
       } else {
         searchOptions = { id };
       }
@@ -79,6 +85,7 @@ export class PrismaUserRepository
         this.selectFields = {
           id: true,
           email: true,
+          password: true,
           userName: true,
           avatar: true,
           createdAt: true,
@@ -86,15 +93,24 @@ export class PrismaUserRepository
         };
       }
 
-      const users = await this.usersPrisma.findFirst({
+      const users: Users = await this.usersPrisma.findFirst({
         where: searchOptions,
         select: this.selectFields,
       });
-      if (users) {
-        const usersResult: Users = new Users(users);
-        return usersResult;
+
+      const passwordMatch =
+        pwdToTest && users
+          ? await ComparePasswords(pwdToTest, users.password)
+          : false;
+
+      if (!users) HttpExceptionUtil.notfound(`User not found`);
+
+      if (showDetail && !passwordMatch) {
+        HttpExceptionUtil.badRequest(`Email or password are incorrect.`);
       }
-      HttpExceptionUtil.notfound(`User not found with the id: ${id}`);
+
+      const usersResult: Users = new Users(users);
+      return usersResult;
     } catch (error) {
       return error;
     }
@@ -114,6 +130,7 @@ export class PrismaUserRepository
           }
 
           this.selectFields = {
+            id: true,
             email: true,
             userName: true,
             avatar: true,
@@ -124,7 +141,7 @@ export class PrismaUserRepository
             select: this.selectFields,
           });
           if (savingUser) {
-            const newUser = new Users(savingUser);
+            const newUser: Users = new Users(savingUser);
             return newUser;
           }
         });
@@ -153,6 +170,7 @@ export class PrismaUserRepository
               userName: true,
               avatar: true,
               isBlocked: true,
+              updatedAt: true,
             };
             const updateUser = await prisma.users.update({
               where: { id },
@@ -160,7 +178,7 @@ export class PrismaUserRepository
               select: this.selectFields,
             });
             if (updateUser) {
-              const result = new Users(updateUser);
+              const result: Users = new Users(updateUser);
               return result;
             }
           }
@@ -170,16 +188,29 @@ export class PrismaUserRepository
       return error;
     }
   }
-  async Update(id: string, data: UpdateUserDto, params?: any): Promise<Users> {
+  async Update(
+    id: string,
+    showDetail: boolean,
+    data: UpdateUserDto,
+    params?: any,
+  ): Promise<Users> {
     try {
       return await this._dbService
         .getDBInstance()
         .$transaction(async (prisma) => {
+          let searchOptions: any = {};
+          if (params && showDetail) {
+            searchOptions = params;
+          } else {
+            searchOptions = { id };
+          }
           const searchUser = await prisma.users.findFirst({
-            where: { id },
+            where: searchOptions,
           });
+
           if (searchUser) {
             this.selectFields = {
+              id: true,
               email: true,
               userName: true,
               avatar: true,
@@ -187,12 +218,12 @@ export class PrismaUserRepository
               updatedAt: true,
             };
             const updateUser = await prisma.users.update({
-              where: { id },
+              where: { id: searchUser.id },
               data,
               select: this.selectFields,
             });
             if (updateUser) {
-              const result = new Users(updateUser);
+              const result: Users = new Users(updateUser);
               return result;
             }
           }

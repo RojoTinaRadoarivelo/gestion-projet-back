@@ -15,5 +15,11 @@ import { UserRepository } from '../interfaces/users.repository';
     PrismaUserRepository,
     CreateUserPresenter,
   ],
+  exports: [
+    CreateUserService,
+    UserRepository,
+    PrismaUserRepository,
+    CreateUserPresenter,
+  ],
 })
 export class CreateUserModule {}
