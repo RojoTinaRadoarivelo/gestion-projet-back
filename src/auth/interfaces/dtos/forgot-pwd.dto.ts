@@ -3,6 +3,7 @@ import {
   IsString,
   IsEmail,
   IsStrongPassword,
+  Length,
 } from 'class-validator';
 import { ErrorMessages } from 'src/core/utils/interfaces/error-messages';
 
@@ -27,4 +28,8 @@ export class ForgotPasswordDto {
   )
   @IsString({ message: ErrorMessages.INVALID_TYPE })
   password: string;
+  @IsNotEmpty({ message: ErrorMessages.REQUIRED })
+  @IsString({ message: ErrorMessages.INVALID_TYPE })
+  @Length(8, 8)
+  code: string;
 }

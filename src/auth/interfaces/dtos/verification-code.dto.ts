@@ -1,13 +1,7 @@
-import {
-  IsNotEmpty,
-  IsString,
-  IsEmail,
-  IsStrongPassword,
-  Length,
-} from 'class-validator';
+import { IsNotEmpty, IsString, IsEmail, Length } from 'class-validator';
 import { ErrorMessages } from 'src/core/utils/interfaces/error-messages';
 
-export class SignUpDto {
+export class SendVerificationCodeDto {
   @IsNotEmpty({ message: ErrorMessages.REQUIRED })
   @IsString({ message: ErrorMessages.INVALID_TYPE })
   @IsEmail(
@@ -15,19 +9,16 @@ export class SignUpDto {
     { message: ErrorMessages.INVALID_TYPE },
   )
   email: string;
+}
+
+export class VerificationCodeDto {
   @IsNotEmpty({ message: ErrorMessages.REQUIRED })
-  @IsStrongPassword(
-    {
-      minLength: 10,
-      minUppercase: 1,
-      minLowercase: 1,
-      minNumbers: 1,
-      minSymbols: 1,
-    },
-    { message: ErrorMessages.NOT_STRONG_PWD },
-  )
   @IsString({ message: ErrorMessages.INVALID_TYPE })
-  password: string;
+  @IsEmail(
+    { allow_display_name: true },
+    { message: ErrorMessages.INVALID_TYPE },
+  )
+  email: string;
   @IsNotEmpty({ message: ErrorMessages.REQUIRED })
   @IsString({ message: ErrorMessages.INVALID_TYPE })
   @Length(8, 8)

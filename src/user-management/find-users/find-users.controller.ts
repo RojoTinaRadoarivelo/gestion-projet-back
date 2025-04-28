@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, Req, UseGuards } from '@nestjs/common';
 import { FindUsersService } from './find-users.service';
 import {
   FindAllUserPresenter,
@@ -8,10 +8,21 @@ import { reponsesDTO } from 'src/core/utils/interfaces/responses';
 import { UserOutputDto, UsersOutputDto } from '../interfaces/dtos/outputs.dto';
 import { Users } from '../users.entity';
 import { UuidValidatorPipe } from 'src/core/middlewares/pipes/uuid-validator.pipe';
+import { AuthGuard } from 'src/core/middlewares/auth.guard';
 
 @Controller('users')
 export class FindUsersController {
   constructor(private readonly _findUsersService: FindUsersService) {}
+
+  @Get('info')
+  @UseGuards(AuthGuard)
+  async FindByToken(@Req() req: any): Promise<reponsesDTO<UserOutputDto>> {
+    return {
+      message: 'Information about the user',
+      data: req.user,
+      statusCode: 200,
+    };
+  }
 
   @Get(':id')
   async FindOneUser(

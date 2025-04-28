@@ -34,4 +34,34 @@ export class SignInController {
     }
     return res.status(statusCode).json(response);
   }
+
+  @Post('refresh')
+  async refresh(
+    @Body() body: { refreshToken: string },
+    @Res() res: Response,
+  ): Promise<reponsesDTO<{ sess_id: any }> | any> {
+    let response: reponsesDTO<{ sess_id: any }>;
+    const authorization = body.refreshToken ?? null;
+    if (!authorization) {
+      return res.status(403).json({
+        message: "You're not authorized or expired token.",
+        statusCode: 403,
+      });
+    }
+    const accessToken = await this._signInService.refresh(authorization);
+    const statusCode = accessToken.statusCode;
+    const message = accessToken.message;
+
+    if (accessToken.data) {
+      res.cookie('accessToken', accessToken.data.c_id, cookieOptions);
+      response = {
+        message,
+        data: { sess_id: accessToken.data.sess_id },
+        statusCode,
+      };
+    } else {
+      response = { statusCode, message };
+    }
+    return res.status(statusCode).json(response);
+  }
 }

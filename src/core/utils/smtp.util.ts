@@ -15,11 +15,11 @@ export class SMTPUtil {
     this.transporter = nodemailer.createTransport({
       host: this.host,
       port: this.port,
-      secure: true,
-      auth: {
-        user: this.user,
-        pass: this.pass,
-      },
+      secure: false, // with local environment
+      // auth: {
+      //   user: this.user,
+      //   pass: this.pass,
+      // },
       tls: {
         rejectUnauthorized: true,
       },

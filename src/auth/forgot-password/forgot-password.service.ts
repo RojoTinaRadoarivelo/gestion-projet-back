@@ -7,6 +7,7 @@ import { Users } from 'src/user-management/users.entity';
 import { JwtService } from '@nestjs/jwt';
 import { SessionsService } from '../sessions/sessions.service';
 import { HashPassword } from 'src/core/utils/interfaces/pwd-encryption';
+import { MfaService } from '../mfa/mfa.service';
 
 @Injectable()
 export class ForgotPasswordService {
@@ -14,6 +15,7 @@ export class ForgotPasswordService {
     private readonly _userService: UpdateUserService,
     private readonly _jwtService: JwtService,
     private readonly _sessionService: SessionsService,
+    private readonly _mfaService: MfaService,
   ) {}
 
   async ForgotPwd(
@@ -77,5 +79,8 @@ export class ForgotPasswordService {
       response = { statusCode, message };
     }
     return response;
+  }
+  async verifyCode(email: string, code: string) {
+    return await this._mfaService.verifyCode(email, code);
   }
 }
