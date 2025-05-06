@@ -38,7 +38,7 @@ export class SignInService {
       const c_id = this._jwtService.sign(payload, {
         secret: process.env.TOKEN_SECRET,
       });
-      const userSessionId = await this._sessionService.searchSession(
+      const userSessionId = await this._sessionService.searchSessionByUser(
         dataResponse.id,
       );
       let payload_session: any;
@@ -80,9 +80,37 @@ export class SignInService {
     let response: reponsesDTO<{ c_id: any; sess_id: any }>;
     const decoded = this._jwtService.decode(token);
 
-    const searchUser: reponsesDTO<Users> = await this._userService.findOne(
-      decoded.id,
+    const userSessionId = await this._sessionService.searchSessionById(
+      decoded.sub,
     );
+    let payload_session: any;
+    let sess_token: any;
+    let sess_id: string;
+    if (userSessionId) {
+      sess_id = userSessionId;
+      payload_session = {
+        sub: sess_id,
+      };
+    } else {
+      response = { statusCode: 500, message: 'The user is not found' };
+      return response;
+    }
+
+    sess_token = this._jwtService.sign(payload_session, {
+      secret: process.env.REFRESH_SECRET,
+      expiresIn: process.env.REFRESH_DURATION,
+    });
+
+    const updated = await this._sessionService.UpdateDetailedSession(
+      sess_id,
+      sess_token,
+    );
+
+    const searchUser: reponsesDTO<Users> = await this._userService.findOne(
+      updated.user.id,
+      true,
+    );
+
     const statusCode = searchUser.statusCode;
     const message = searchUser.message;
 
@@ -98,30 +126,6 @@ export class SignInService {
       const c_id = this._jwtService.sign(payload, {
         secret: process.env.TOKEN_SECRET,
       });
-      const userSessionId = await this._sessionService.searchSession(
-        dataResponse.id,
-      );
-      let payload_session: any;
-      let sess_token: any;
-      let sess_id: string;
-      if (userSessionId) {
-        sess_id = userSessionId;
-        payload_session = {
-          sub: sess_id,
-        };
-      } else {
-        sess_id = await this._sessionService.CreateSession(dataResponse.id);
-        payload_session = {
-          sub: sess_id,
-        };
-      }
-
-      sess_token = this._jwtService.sign(payload_session, {
-        secret: process.env.REFRESH_SECRET,
-        expiresIn: process.env.REFRESH_DURATION,
-      });
-
-      await this._sessionService.UpdateSession(sess_id, sess_token);
 
       response = {
         message: 'The token was refresh successfuly!',

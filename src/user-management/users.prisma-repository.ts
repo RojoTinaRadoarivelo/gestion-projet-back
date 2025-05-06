@@ -105,7 +105,7 @@ export class PrismaUserRepository
 
       if (!users) HttpExceptionUtil.notfound(`User not found`);
 
-      if (showDetail && !passwordMatch) {
+      if (showDetail && !passwordMatch && params && id == null) {
         HttpExceptionUtil.badRequest(`Email or password are incorrect.`);
       }
 

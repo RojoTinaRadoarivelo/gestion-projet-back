@@ -37,11 +37,11 @@ export class SignInController {
 
   @Post('refresh')
   async refresh(
-    @Body() body: { refreshToken: string },
+    @Body() body: { sess_id: string },
     @Res() res: Response,
   ): Promise<reponsesDTO<{ sess_id: any }> | any> {
     let response: reponsesDTO<{ sess_id: any }>;
-    const authorization = body.refreshToken ?? null;
+    const authorization = body.sess_id ?? null;
     if (!authorization) {
       return res.status(403).json({
         message: "You're not authorized or expired token.",

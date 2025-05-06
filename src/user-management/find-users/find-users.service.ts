@@ -56,12 +56,12 @@ export class FindUsersService {
     }
   }
 
-  async findOne(id: string): Promise<reponsesDTO<Users>> {
+  async findOne(id: string, showDetail?: boolean): Promise<reponsesDTO<Users>> {
     let response: reponsesDTO<Users>;
     try {
       const user: Users | HttpException = await this._userRepository.FindOne(
         id,
-        false,
+        showDetail ?? false,
         null,
         { orderBy: { createdAt: 'asc' } },
         {

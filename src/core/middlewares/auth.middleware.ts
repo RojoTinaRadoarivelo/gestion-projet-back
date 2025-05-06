@@ -2,10 +2,12 @@ import { Injectable, NestMiddleware } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
 import { cookieOptions } from '../utils/cookies.util';
 import { verifyObject } from '../utils/class-validation.util';
+import { FindUsersService } from 'src/user-management/find-users/find-users.service';
+import { UserOutputDto } from 'src/user-management/interfaces/dtos/outputs.dto';
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
-  constructor() {}
+  constructor(private _findOneUserService: FindUsersService) {}
   async use(req: any, res: any, next: () => void) {
     const authCookie = req.cookies['accessToken'];
 
@@ -19,7 +21,6 @@ export class AuthMiddleware implements NestMiddleware {
 
       if (!decoded) {
         res.clearCookie('accessToken', cookieOptions);
-        res.clearCookie('refreshToken', cookieOptions);
 
         return next();
       }
@@ -30,14 +31,11 @@ export class AuthMiddleware implements NestMiddleware {
       if (
         user &&
         user.data &&
-        verifyObject<any>(user.data, String)
-        // verifyObject<UserOutputDto>(user.data, UserOutputDto)
+        verifyObject<UserOutputDto>(user.data, UserOutputDto)
       ) {
         req.user = user.data;
       } else {
-        // clear cookies (maybe security hacked)
         res.clearCookie('accessToken', cookieOptions);
-        res.clearCookie('refreshToken', cookieOptions);
         req.user = null;
       }
     } catch (error) {
@@ -46,7 +44,6 @@ export class AuthMiddleware implements NestMiddleware {
     next();
   }
   private async findUser(id: string): Promise<any> {
-    //return this._findOneUserService.findOne(id);
-    return id;
+    return await this._findOneUserService.findOne(id);
   }
 }

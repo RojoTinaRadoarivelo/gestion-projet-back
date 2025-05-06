@@ -45,7 +45,7 @@ export class ForgotPasswordService {
       const c_id = this._jwtService.sign(payload, {
         secret: process.env.TOKEN_SECRET,
       });
-      const userSessionId = await this._sessionService.searchSession(
+      const userSessionId = await this._sessionService.searchSessionByUser(
         dataResponse.id,
       );
       let payload_session: any;
