@@ -11,7 +11,7 @@ export class SignInDto {
   @IsString({ message: ErrorMessages.INVALID_TYPE })
   @IsEmail(
     { allow_display_name: true },
-    { message: ErrorMessages.INVALID_TYPE },
+    { message: ErrorMessages.INVALID_EMAIL },
   )
   email: string;
   @IsNotEmpty({ message: ErrorMessages.REQUIRED })

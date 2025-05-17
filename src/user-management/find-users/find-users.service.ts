@@ -101,12 +101,15 @@ export class FindUsersService {
     }
   }
 
-  async findOneBy(params: any): Promise<reponsesDTO<Users>> {
+  async findOneBy(
+    params: any,
+    showDetail: boolean = false,
+  ): Promise<reponsesDTO<Users>> {
     let response: reponsesDTO<Users>;
     try {
       const user: Users | HttpException = await this._userRepository.FindOne(
         null,
-        true,
+        showDetail,
         params,
         { orderBy: { createdAt: 'asc' } },
         {

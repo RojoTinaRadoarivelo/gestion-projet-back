@@ -1,10 +1,20 @@
-import { Body, Controller, Post, Res, UsePipes } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Res,
+  UsePipes,
+} from '@nestjs/common';
 import { SignInService } from './sign-in.service';
 import { GenericDtoValidatorPipe } from 'src/core/middlewares/pipes/generic-dto-validator.pipe';
 import { SignInDto } from '../interfaces/dtos/sign-in.dto';
 import { reponsesDTO } from 'src/core/utils/interfaces/responses';
 import { Response } from 'express';
 import { cookieOptions } from 'src/core/utils/cookies.util';
+import { SignedUserDto } from '../interfaces/dtos/signed-user.dto';
+import { EmailParamValidatorPipe } from 'src/core/middlewares/validators/email-parm.validator';
 
 @Controller('auth')
 export class SignInController {
@@ -63,5 +73,12 @@ export class SignInController {
       response = { statusCode, message };
     }
     return res.status(statusCode).json(response);
+  }
+
+  @Get('search/user/:email')
+  async SearchUserByEmail(
+    @Param('email', EmailParamValidatorPipe) email: string,
+  ): Promise<reponsesDTO<SignedUserDto>> {
+    return await this._signInService.SearchUserByEmail(email);
   }
 }

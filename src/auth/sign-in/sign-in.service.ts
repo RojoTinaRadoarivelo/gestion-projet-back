@@ -6,6 +6,7 @@ import { reponsesDTO } from 'src/core/utils/interfaces/responses';
 import { AuthUserPresenter } from '../interfaces/presenters/auth-user.presenter';
 import { JwtService } from '@nestjs/jwt';
 import { SessionsService } from '../sessions/sessions.service';
+import { SignedUserDto } from '../interfaces/dtos/signed-user.dto';
 
 @Injectable()
 export class SignInService {
@@ -19,10 +20,13 @@ export class SignInService {
     data: SignInDto,
   ): Promise<reponsesDTO<{ c_id: any; sess_id: any }>> {
     let response: reponsesDTO<{ c_id: any; sess_id: any }>;
-    const searchUser: reponsesDTO<Users> = await this._userService.findOneBy({
-      email: data.email,
-      password: data.password,
-    });
+    const searchUser: reponsesDTO<Users> = await this._userService.findOneBy(
+      {
+        email: data.email,
+        password: data.password,
+      },
+      true,
+    );
     const statusCode = searchUser.statusCode;
     const message = searchUser.message;
 
@@ -130,6 +134,28 @@ export class SignInService {
       response = {
         message: 'The token was refresh successfuly!',
         data: { c_id, sess_id: sess_token },
+        statusCode: HttpStatus.OK,
+      };
+    } else {
+      response = { statusCode, message };
+    }
+    return response;
+  }
+
+  async SearchUserByEmail(email: string): Promise<reponsesDTO<SignedUserDto>> {
+    let response: reponsesDTO<SignedUserDto>;
+    const searchUser: reponsesDTO<Users> = await this._userService.findOneBy({
+      email,
+    });
+    const statusCode = searchUser.statusCode;
+    const message = searchUser.message;
+
+    if (searchUser.data) {
+      let userPresenter: AuthUserPresenter = new AuthUserPresenter();
+      const dataResponse = userPresenter.present(searchUser.data);
+      response = {
+        message: 'The user was found!',
+        data: dataResponse,
         statusCode: HttpStatus.OK,
       };
     } else {
