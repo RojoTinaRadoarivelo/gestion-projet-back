@@ -17,9 +17,11 @@ export class FindUsersController {
   @Get('info')
   @UseGuards(AuthGuard)
   async FindByToken(@Req() req: any): Promise<reponsesDTO<UserOutputDto>> {
+    let userPresenter: FindOneUserPresenter = new FindOneUserPresenter();
+    const dataResponse = req.user ? userPresenter.present(req.user) : null;
     return {
       message: 'Information about the user',
-      data: req.user,
+      data: dataResponse,
       statusCode: 200,
     };
   }
