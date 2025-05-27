@@ -1,4 +1,5 @@
 import { Body, Controller, Param, Put, UsePipes } from '@nestjs/common';
+
 import { BlockUserService } from './block-user.service';
 import { GenericDtoValidatorPipe } from 'src/core/middlewares/pipes/generic-dto-validator.pipe';
 import { StatusUserDto } from '../interfaces/dtos/status-user.dto';

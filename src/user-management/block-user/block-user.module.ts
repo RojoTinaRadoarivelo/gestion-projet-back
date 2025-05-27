@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+
 import { BlockUserService } from './block-user.service';
 import { BlockUserController } from './block-user.controller';
 import { DatabaseModule } from 'src/core/database/database.module';

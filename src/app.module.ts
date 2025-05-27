@@ -6,6 +6,7 @@ import { AuthMiddleware } from './core/middlewares/auth.middleware';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
+import { GroupManagementModule } from './group-management/group-management.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { APP_GUARD } from '@nestjs/core';
     }),
     AuthModule,
     UserManagementModule,
+    GroupManagementModule,
   ],
   providers: [
     {

@@ -13,7 +13,15 @@ export class PrismaUserRepository
   implements Repository<CreateUserDto, UpdateUserDto, Users>
 {
   private usersPrisma: any;
-  private selectFields: any = {};
+  private selectFields: any = {
+    id: true,
+    email: true,
+    userName: true,
+    avatar: true,
+    isBlocked: true,
+    createdAt: true,
+    updatedAt: true,
+  };
   constructor(private readonly _dbService: PrismaService) {
     this.usersPrisma = _dbService.getDBInstance().users;
   }
@@ -26,15 +34,6 @@ export class PrismaUserRepository
     },
   ): Promise<Users[]> {
     try {
-      this.selectFields = {
-        id: true,
-        email: true,
-        userName: true,
-        avatar: true,
-        isBlocked: true,
-        createdAt: true,
-        updatedAt: true,
-      };
       const users = await this.usersPrisma.findMany({
         select: this.selectFields,
         orderBy: options.orderBy,
@@ -122,6 +121,7 @@ export class PrismaUserRepository
         .$transaction(async (prisma) => {
           const searchUser = await prisma.users.findFirst({
             where: { email: data.email },
+            select: { name: true },
           });
           if (searchUser) {
             HttpExceptionUtil.conflict(
@@ -163,6 +163,7 @@ export class PrismaUserRepository
         .$transaction(async (prisma) => {
           const searchUser = await prisma.users.findFirst({
             where: { id },
+            select: { name: true },
           });
           if (searchUser) {
             this.selectFields = {
@@ -206,6 +207,7 @@ export class PrismaUserRepository
           }
           const searchUser = await prisma.users.findFirst({
             where: searchOptions,
+            select: { name: true },
           });
 
           if (searchUser) {

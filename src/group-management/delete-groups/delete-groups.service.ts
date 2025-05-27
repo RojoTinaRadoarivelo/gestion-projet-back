@@ -5,34 +5,30 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 
-import { UserRepository } from '../interfaces/users.repository';
-import { StatusUserDto } from '../interfaces/dtos/status-user.dto';
+import { Groups } from '../group.entity';
 import { verifyObject } from 'src/core/utils/class-validation.util';
 import { reponsesDTO } from 'src/core/utils/interfaces/responses';
-import { Users } from '../users.entity';
+import { GroupRepository } from '../interfaces/groups.repository';
 
 @Injectable()
-export class BlockUserService {
-  constructor(private readonly _userRepository: UserRepository) {}
+export class DeleteGroupsService {
+  constructor(private readonly _groupRepository: GroupRepository) {}
 
-  async blockingUser(
-    id: string,
-    data: StatusUserDto,
-  ): Promise<reponsesDTO<Users>> {
-    let response: reponsesDTO<Users>;
+  async DeleteOne(id: string): Promise<reponsesDTO<Groups>> {
+    let response: reponsesDTO<Groups>;
     try {
-      const user = await this._userRepository.UpdateStatus(id, data, null, {
+      const updatedgroup = await this._groupRepository.DeleteOne(id, null, {
         method: 'prisma',
       });
-      if (verifyObject<Users>(user, Users)) {
+      if (verifyObject<Groups>(updatedgroup, Groups)) {
         response = {
           statusCode: HttpStatus.OK,
-          message: 'User was de/blocked successfully.',
-          data: user,
+          message: 'Group was deleted successfully.',
+          data: updatedgroup,
         };
         return response;
       } else {
-        throw user;
+        throw updatedgroup;
       }
     } catch (error) {
       if (error instanceof NotFoundException) {

@@ -7,19 +7,19 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 
-import { UserRepository } from '../interfaces/users.repository';
-import { Users } from '../users.entity';
-import { reponsesDTO } from 'src/core/utils/interfaces/responses';
 import { verifyObject } from 'src/core/utils/class-validation.util';
+import { reponsesDTO } from 'src/core/utils/interfaces/responses';
+import { Groups } from '../group.entity';
+import { GroupRepository } from '../interfaces/groups.repository';
 
 @Injectable()
-export class FindUsersService {
-  constructor(private readonly _userRepository: UserRepository) {}
+export class FindGroupsService {
+  constructor(private readonly _groupRepository: GroupRepository) {}
 
-  async findAll(): Promise<reponsesDTO<Users[]>> {
-    let response: reponsesDTO<Users[]>;
+  async findAll(): Promise<reponsesDTO<Groups[]>> {
+    let response: reponsesDTO<Groups[]>;
     try {
-      const listUser = await this._userRepository.FindAll(
+      const listGroup = await this._groupRepository.FindAll(
         null,
         { orderBy: { createdAt: 'desc' } },
         {
@@ -28,18 +28,18 @@ export class FindUsersService {
       );
 
       if (
-        listUser &&
-        Array.isArray(listUser) &&
-        listUser.every((item) => item instanceof Users)
+        listGroup &&
+        Array.isArray(listGroup) &&
+        listGroup.every((item) => item instanceof Groups)
       ) {
         response = {
           statusCode: HttpStatus.OK,
-          message: 'List of user.',
-          data: listUser,
+          message: 'List of group.',
+          data: listGroup,
         };
         return response;
       } else {
-        throw listUser;
+        throw listGroup;
       }
     } catch (error) {
       if (error instanceof BadRequestException) {
@@ -57,10 +57,13 @@ export class FindUsersService {
     }
   }
 
-  async findOne(id: string, showDetail?: boolean): Promise<reponsesDTO<Users>> {
-    let response: reponsesDTO<Users>;
+  async findOne(
+    id: string,
+    showDetail?: boolean,
+  ): Promise<reponsesDTO<Groups>> {
+    let response: reponsesDTO<Groups>;
     try {
-      const user: Users | HttpException = await this._userRepository.FindOne(
+      const group: Groups | HttpException = await this._groupRepository.FindOne(
         id,
         showDetail ?? false,
         null,
@@ -70,15 +73,15 @@ export class FindUsersService {
         },
       );
 
-      if (user && verifyObject<Users>(user, Users)) {
+      if (group && verifyObject<Groups>(group, Groups)) {
         response = {
           statusCode: HttpStatus.OK,
-          message: 'Information about the user.',
-          data: user,
+          message: 'Information about the group.',
+          data: group,
         };
         return response;
       } else {
-        throw user;
+        throw group;
       }
     } catch (error) {
       if (error instanceof NotFoundException) {
@@ -105,10 +108,10 @@ export class FindUsersService {
   async findOneBy(
     params: any,
     showDetail: boolean = false,
-  ): Promise<reponsesDTO<Users>> {
-    let response: reponsesDTO<Users>;
+  ): Promise<reponsesDTO<Groups>> {
+    let response: reponsesDTO<Groups>;
     try {
-      const user: Users | HttpException = await this._userRepository.FindOne(
+      const group: Groups | HttpException = await this._groupRepository.FindOne(
         null,
         showDetail,
         params,
@@ -118,15 +121,15 @@ export class FindUsersService {
         },
       );
 
-      if (user && verifyObject<Users>(user, Users)) {
+      if (group && verifyObject<Groups>(group, Groups)) {
         response = {
           statusCode: HttpStatus.OK,
-          message: 'Information about the user.',
-          data: user,
+          message: 'Information about the group.',
+          data: group,
         };
         return response;
       } else {
-        throw user;
+        throw group;
       }
     } catch (error) {
       if (error instanceof NotFoundException) {

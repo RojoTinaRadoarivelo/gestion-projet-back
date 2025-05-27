@@ -4,30 +4,23 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-
-import { UserRepository } from '../interfaces/users.repository';
-import { UpdateUserDto } from '../interfaces/dtos/update-user.dto';
+import { GroupRepository } from '../interfaces/groups.repository';
+import { UpdateGroupDto } from '../interfaces/dtos/update-group.dto';
 import { verifyObject } from 'src/core/utils/class-validation.util';
 import { reponsesDTO } from 'src/core/utils/interfaces/responses';
-import { Users } from '../users.entity';
-import { HashPassword } from 'src/core/utils/interfaces/pwd-encryption';
+import { Groups } from '../group.entity';
 
 @Injectable()
-export class UpdateUserService {
-  constructor(private readonly _userRepository: UserRepository) {}
+export class UpdateGroupsService {
+  constructor(private readonly _groupRepository: GroupRepository) {}
 
   async UpdateOne(
     id: string,
-    data: UpdateUserDto,
-  ): Promise<reponsesDTO<Users>> {
-    let response: reponsesDTO<Users>;
+    data: UpdateGroupDto,
+  ): Promise<reponsesDTO<Groups>> {
+    let response: reponsesDTO<Groups>;
     try {
-      if (data.password) {
-        const hashedPassword = await HashPassword(data.password, 10);
-        data.password = hashedPassword;
-      }
-
-      const updatedUser = await this._userRepository.Update(
+      const updatedgroup = await this._groupRepository.Update(
         id,
         false,
         data,
@@ -36,15 +29,15 @@ export class UpdateUserService {
           method: 'prisma',
         },
       );
-      if (verifyObject<Users>(updatedUser, Users)) {
+      if (verifyObject<Groups>(updatedgroup, Groups)) {
         response = {
           statusCode: HttpStatus.OK,
-          message: 'User was updated successfully.',
-          data: updatedUser,
+          message: 'Group was updated successfully.',
+          data: updatedgroup,
         };
         return response;
       } else {
-        throw updatedUser;
+        throw updatedgroup;
       }
     } catch (error) {
       if (error instanceof NotFoundException) {
@@ -69,12 +62,12 @@ export class UpdateUserService {
   }
 
   async UpdateOneBy(
-    data: UpdateUserDto,
+    data: UpdateGroupDto,
     params: any,
-  ): Promise<reponsesDTO<Users>> {
-    let response: reponsesDTO<Users>;
+  ): Promise<reponsesDTO<Groups>> {
+    let response: reponsesDTO<Groups>;
     try {
-      const updatedUser = await this._userRepository.Update(
+      const updatedgroup = await this._groupRepository.Update(
         null,
         true,
         data,
@@ -83,15 +76,15 @@ export class UpdateUserService {
           method: 'prisma',
         },
       );
-      if (verifyObject<Users>(updatedUser, Users)) {
+      if (verifyObject<Groups>(updatedgroup, Groups)) {
         response = {
           statusCode: HttpStatus.OK,
-          message: 'User was updated successfully.',
-          data: updatedUser,
+          message: 'Group was updated successfully.',
+          data: updatedgroup,
         };
         return response;
       } else {
-        throw updatedUser;
+        throw updatedgroup;
       }
     } catch (error) {
       if (error instanceof NotFoundException) {

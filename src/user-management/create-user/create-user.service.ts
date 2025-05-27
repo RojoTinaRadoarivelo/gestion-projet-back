@@ -4,14 +4,13 @@ import {
   HttpException,
   HttpStatus,
   Injectable,
-  InternalServerErrorException,
 } from '@nestjs/common';
+
 import { CreateUserDto } from '../interfaces/dtos/create-user.dto';
 import { Users } from '../users.entity';
 import { reponsesDTO } from 'src/core/utils/interfaces/responses';
 import { UserRepository } from '../interfaces/users.repository';
 import { verifyObject } from 'src/core/utils/class-validation.util';
-import { HttpExceptionUtil } from 'src/core/utils/http-exception.util';
 import { HashPassword } from 'src/core/utils/interfaces/pwd-encryption';
 
 @Injectable()
