@@ -15,9 +15,21 @@ export class UpdateGroupOutputDto {
 export class GroupOutputDto {
   name: string;
   admin: string;
+  members?: AssignationOutputDto[];
   createdAt?: string;
   updatedAt?: string;
   id?: string;
+}
+
+export class AssignationOutputDto {
+  id: string;
+  user: {
+    id: string;
+    email: string;
+    userName?: string;
+  };
+  createdAt: string;
+  updatedAt?: string;
 }
 
 export class GroupsOutputDto {
@@ -25,4 +37,21 @@ export class GroupsOutputDto {
   name: string;
   admin: string;
   createdAt: string;
+}
+
+// assignation
+
+export class UserAssignationOutputDto {
+  id: string;
+  group: {
+    id: string;
+    name: string;
+  };
+  user: {
+    id: string;
+    email: string;
+    userName?: string;
+  };
+  createdAt: string;
+  updatedAt?: string;
 }

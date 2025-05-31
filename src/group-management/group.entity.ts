@@ -5,6 +5,7 @@ export class Groups {
   private _name: string;
   private _admin: Users | null;
   private _projects?: any[];
+  private _UserGroups?: any[];
   private _createdAt: Date;
   private _updatedAt?: Date;
 
@@ -42,6 +43,14 @@ export class Groups {
     this._projects = v;
   }
 
+  public get UserGroups(): any[] {
+    return this._UserGroups;
+  }
+
+  public set UserGroups(v: any[]) {
+    this._UserGroups = v;
+  }
+
   public get createdAt(): Date {
     return this._createdAt;
   }
@@ -64,6 +73,7 @@ export class Groups {
     createdAt: Date;
     id?: string | null;
     projects?: any[];
+    UserGroups?: any[];
     updatedAt?: Date;
   }) {
     this.name = data.name;
@@ -71,6 +81,7 @@ export class Groups {
     this.createdAt = data.createdAt;
     this.id = data.id ?? null;
     this.projects = data.projects ?? [];
+    this.UserGroups = data.UserGroups ?? [];
     this.updatedAt = data.updatedAt;
   }
 }

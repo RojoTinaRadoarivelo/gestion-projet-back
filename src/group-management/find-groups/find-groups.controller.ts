@@ -49,6 +49,7 @@ export class FindGroupsController {
 
     const responseGroups: reponsesDTO<Groups[]> =
       await this._findGroupsService.findAll();
+
     const statusCode = responseGroups.statusCode;
     const message = responseGroups.message;
 

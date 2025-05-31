@@ -5,6 +5,10 @@ import { Groups } from '../group.entity';
 import { CreateGroupDto } from './dtos/create-group.dto';
 import { UpdateGroupDto } from './dtos/update-group.dto';
 import { PrismaGroupRepository } from '../group.prisma-repository';
+import {
+  CreateAssignationDto,
+  UpdateAssignationDto,
+} from './dtos/assignation.dto';
 
 @Injectable()
 export class GroupRepository
@@ -101,6 +105,32 @@ export class GroupRepository
     params?: any,
     persistance?: { method: string },
   ): Promise<Groups[]> {
+    throw new Error('Method not implemented.');
+  }
+
+  async CreateAssigment(
+    data: CreateAssignationDto,
+    params?: any,
+    persistance?: { method: string },
+  ) {
+    if (persistance.method == 'prisma') {
+      return await this._prismaGroupRepository.CreateAssignment(data, params);
+    }
+    throw new Error('Method not implemented.');
+  }
+  async UpdateAssigment(
+    id: string,
+    data: UpdateAssignationDto,
+    params?: any,
+    persistance?: { method: string },
+  ) {
+    if (persistance.method == 'prisma') {
+      return await this._prismaGroupRepository.UpdateAssignment(
+        id,
+        data,
+        params,
+      );
+    }
     throw new Error('Method not implemented.');
   }
 }

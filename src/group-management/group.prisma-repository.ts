@@ -6,6 +6,11 @@ import { HttpExceptionUtil } from 'src/core/utils/http-exception.util';
 import { Groups } from './group.entity';
 import { CreateGroupDto } from './interfaces/dtos/create-group.dto';
 import { UpdateGroupDto } from './interfaces/dtos/update-group.dto';
+import {
+  CreateAssignationDto,
+  UpdateAssignationDto,
+} from './interfaces/dtos/assignation.dto';
+import { UserAssignation } from './assignation.entity';
 
 @Injectable()
 export class PrismaGroupRepository
@@ -16,6 +21,20 @@ export class PrismaGroupRepository
     id: true,
     name: true,
     admin: true,
+    UserGroups: {
+      select: {
+        id: true,
+        user: {
+          select: {
+            id: true,
+            userName: true,
+            email: true,
+          },
+        },
+        createdAt: true,
+        updatedAt: true,
+      },
+    },
     createdAt: true,
     updatedAt: true,
   };
@@ -31,18 +50,18 @@ export class PrismaGroupRepository
     },
   ): Promise<Groups[]> {
     try {
-      const Groups = await this.groupsPrisma.findMany({
+      const groups = await this.groupsPrisma.findMany({
         select: this.selectFields,
         orderBy: options.orderBy,
       });
-      if (Groups) {
-        let GroupsResult: Groups[] = [];
-        Groups.forEach((el: any) => {
-          let GroupElement = new Groups(el);
-          GroupsResult.push(GroupElement);
+      if (groups) {
+        let groupsResult: Groups[] = [];
+        groups.forEach((el: any) => {
+          let groupElement = new Groups(el);
+          groupsResult.push(groupElement);
         });
 
-        return GroupsResult;
+        return groupsResult;
       }
     } catch (error) {
       return error.message;
@@ -72,6 +91,7 @@ export class PrismaGroupRepository
           name: true,
           admin: true,
           projects: true,
+          UserGroups: true,
           createdAt: true,
           updatedAt: true,
         };
@@ -139,7 +159,7 @@ export class PrismaGroupRepository
           }
           const searchGroup = await prisma.groups.findFirst({
             where: searchOptions,
-            select: { name: true },
+            select: { id: true, name: true },
           });
 
           if (searchGroup) {
@@ -178,7 +198,7 @@ export class PrismaGroupRepository
           });
 
           if (searchGroup) {
-            const deleteGroup = await prisma.groups.deleteFirst({
+            const deleteGroup = await prisma.groups.delete({
               where: { id: searchGroup.id },
             });
             if (deleteGroup) {
@@ -194,5 +214,111 @@ export class PrismaGroupRepository
   }
   async DeleteAll(params?: any): Promise<Groups[]> {
     throw new Error('Method not implemented.');
+  }
+
+  async CreateAssignment(
+    data: CreateAssignationDto,
+    params?: any,
+  ): Promise<UserAssignation> {
+    try {
+      return await this._dbService
+        .getDBInstance()
+        .$transaction(async (prisma) => {
+          let searchGroupOptions: any = {};
+          let searchUserOptions: any = {};
+          let searchOptions: any = {};
+          if (params) {
+            searchOptions = params;
+          } else {
+            searchGroupOptions = { id: data.group_id };
+            searchUserOptions = { id: data.user_id };
+          }
+          const searchGroup = await prisma.groups.findFirst({
+            where: searchGroupOptions,
+            select: { name: true },
+          });
+
+          const searchUser = await prisma.users.findFirst({
+            where: searchUserOptions,
+            select: { userName: true, email: true },
+          });
+
+          if (searchGroup && searchUser) {
+            const updateGroup = await prisma.userGroups.create({
+              data,
+              select: {
+                id: true,
+                group: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
+                user: {
+                  select: {
+                    id: true,
+                    userName: true,
+                    email: true,
+                  },
+                },
+                createdAt: true,
+                updatedAt: true,
+              },
+            });
+            if (updateGroup) {
+              const result: UserAssignation = new UserAssignation(updateGroup);
+              return result;
+            }
+          }
+          HttpExceptionUtil.notfound(`Group or User not found.`);
+        });
+    } catch (error) {
+      return error;
+    }
+  }
+  async UpdateAssignment(
+    id: string,
+    data: UpdateAssignationDto,
+    params?: any,
+  ): Promise<UserAssignation> {
+    try {
+      return await this._dbService
+        .getDBInstance()
+        .$transaction(async (prisma) => {
+          let searchGroupOptions: any = {};
+          let searchUserOptions: any = {};
+          let searchOptions: any = {};
+          if (params) {
+            searchOptions = params;
+          } else {
+            searchGroupOptions = { id: data.group_id };
+            searchUserOptions = { id: data.user_id };
+          }
+          const searchGroup = await prisma.groups.findFirst({
+            where: searchGroupOptions,
+            select: { id: true, name: true },
+          });
+
+          const searchUser = await prisma.users.findFirst({
+            where: searchUserOptions,
+            select: { userName: true, email: true },
+          });
+
+          if (searchGroup && searchUser) {
+            const updateGroup = await prisma.userGroups.update({
+              where: { id: searchGroup.id },
+              data,
+              select: this.selectFields,
+            });
+            if (updateGroup) {
+              const result: UserAssignation = new UserAssignation(updateGroup);
+              return result;
+            }
+          }
+          HttpExceptionUtil.notfound(`Group or User not found.`);
+        });
+    } catch (error) {
+      return error;
+    }
   }
 }

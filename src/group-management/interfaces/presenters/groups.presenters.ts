@@ -3,10 +3,13 @@ import { dateToString } from 'src/core/utils/dates.util';
 import { isArray } from 'class-validator';
 import { Groups } from 'src/group-management/group.entity';
 import {
+  AssignationOutputDto,
   CreateGroupOutputDto,
   GroupOutputDto,
   GroupsOutputDto,
+  UserAssignationOutputDto,
 } from '../dtos/outputs.dto';
+import { UserAssignation } from 'src/group-management/assignation.entity';
 
 export class FindAllGroupPresenter
   implements Presenter<Groups[], GroupsOutputDto[]>
@@ -36,6 +39,18 @@ export class FindOneGroupPresenter
 {
   present(data: Groups, options?: any): GroupOutputDto {
     let response: GroupOutputDto;
+    const members: AssignationOutputDto[] =
+      data.UserGroups && data.UserGroups.length
+        ? data.UserGroups.map((el) => ({
+            id: el.id,
+            user: {
+              id: el.user?.id,
+              email: el.user?.email,
+              userName: el.user?.userName ?? '',
+            },
+            createdAt: dateToString(el?.createdAt),
+          }))
+        : [];
     if (data instanceof Groups) {
       response = {
         name: data.name,
@@ -45,6 +60,7 @@ export class FindOneGroupPresenter
             ? data.admin.userName
             : data.admin.email
           : '',
+        members,
       };
     } else {
       response = null;
@@ -113,6 +129,61 @@ export class UpdateGroupPresenter implements Presenter<Groups, GroupOutputDto> {
             ? data.admin.userName
             : data.admin.email
           : '',
+      };
+    } else {
+      response = null;
+    }
+    return response;
+  }
+}
+
+// assignation
+
+export class CreateAssignationPresenter
+  implements Presenter<UserAssignation, UserAssignationOutputDto>
+{
+  present(data: UserAssignation, options?: any): UserAssignationOutputDto {
+    let response: UserAssignationOutputDto;
+    if (data instanceof UserAssignation) {
+      response = {
+        id: data.id,
+        group: {
+          id: data.group.id,
+          name: data.group.name,
+        },
+        user: {
+          id: data.user.id,
+          email: data.user.email,
+          userName: data.user.userName ?? '',
+        },
+        createdAt: dateToString(data.createdAt),
+      };
+    } else {
+      response = null;
+    }
+    return response;
+  }
+}
+
+export class UpdateAssignationPresenter
+  implements Presenter<UserAssignation, UserAssignationOutputDto>
+{
+  present(data: UserAssignation, options?: any): UserAssignationOutputDto {
+    let response: UserAssignationOutputDto;
+    if (data instanceof UserAssignation) {
+      response = {
+        id: data.id,
+        group: {
+          id: data.group.id,
+          name: data.group.name,
+        },
+        user: {
+          id: data.user.id,
+          email: data.user.email,
+          userName: data.user.userName ?? '',
+        },
+        createdAt: dateToString(data.createdAt),
+        updatedAt: dateToString(data.updatedAt),
       };
     } else {
       response = null;

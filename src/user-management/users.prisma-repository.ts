@@ -207,7 +207,7 @@ export class PrismaUserRepository
           }
           const searchUser = await prisma.users.findFirst({
             where: searchOptions,
-            select: { name: true },
+            select: { id: true, name: true },
           });
 
           if (searchUser) {
