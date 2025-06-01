@@ -114,7 +114,7 @@ export class MfaService {
             </html>`;
     const mailToSend = this._smtpService.CreateMail(
       email,
-      'Test email',
+      'Email verification',
       bodyHml,
     );
     try {
