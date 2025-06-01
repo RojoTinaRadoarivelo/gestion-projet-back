@@ -52,6 +52,6 @@ export class UserAssignationOutputDto {
     email: string;
     userName?: string;
   };
-  createdAt: string;
+  createdAt?: string;
   updatedAt?: string;
 }

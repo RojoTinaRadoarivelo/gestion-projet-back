@@ -9,6 +9,7 @@ import {
   CreateAssignationDto,
   UpdateAssignationDto,
 } from './dtos/assignation.dto';
+import { UserAssignation } from '../assignation.entity';
 
 @Injectable()
 export class GroupRepository
@@ -130,6 +131,17 @@ export class GroupRepository
         data,
         params,
       );
+    }
+    throw new Error('Method not implemented.');
+  }
+
+  async RemoveAssignement(
+    id: string,
+    params?: any,
+    persistance?: { method: string },
+  ): Promise<UserAssignation> {
+    if (persistance.method == 'prisma') {
+      return await this._prismaGroupRepository.RemoveAssignement(id, params);
     }
     throw new Error('Method not implemented.');
   }

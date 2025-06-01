@@ -191,3 +191,28 @@ export class UpdateAssignationPresenter
     return response;
   }
 }
+
+export class DeleteAssignationPresenter
+  implements Presenter<UserAssignation, UserAssignationOutputDto>
+{
+  present(data: UserAssignation, options?: any): UserAssignationOutputDto {
+    let response: UserAssignationOutputDto;
+    if (data instanceof UserAssignation) {
+      response = {
+        id: data.id,
+        group: {
+          id: data.group.id,
+          name: data.group.name,
+        },
+        user: {
+          id: data.user.id,
+          email: data.user.email,
+          userName: data.user.userName ?? '',
+        },
+      };
+    } else {
+      response = null;
+    }
+    return response;
+  }
+}

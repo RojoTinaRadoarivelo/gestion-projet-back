@@ -308,7 +308,24 @@ export class PrismaGroupRepository
             const updateGroup = await prisma.userGroups.update({
               where: { id: searchGroup.id },
               data,
-              select: this.selectFields,
+              select: {
+                id: true,
+                group: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
+                user: {
+                  select: {
+                    id: true,
+                    userName: true,
+                    email: true,
+                  },
+                },
+                createdAt: true,
+                updatedAt: true,
+              },
             });
             if (updateGroup) {
               const result: UserAssignation = new UserAssignation(updateGroup);
@@ -316,6 +333,54 @@ export class PrismaGroupRepository
             }
           }
           HttpExceptionUtil.notfound(`Group or User not found.`);
+        });
+    } catch (error) {
+      return error;
+    }
+  }
+
+  async RemoveAssignement(id: string, params?: any): Promise<UserAssignation> {
+    try {
+      return await this._dbService
+        .getDBInstance()
+        .$transaction(async (prisma) => {
+          let searchOptions: any = {};
+          if (params) {
+            searchOptions = params;
+          } else {
+            searchOptions = { id };
+          }
+          const search = await prisma.userGroups.findFirst({
+            where: searchOptions,
+            select: { id: true },
+          });
+
+          if (search) {
+            const updated = await prisma.userGroups.delete({
+              where: { id },
+              select: {
+                id: true,
+                group: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
+                user: {
+                  select: {
+                    id: true,
+                    userName: true,
+                    email: true,
+                  },
+                },
+              },
+            });
+            if (updated) {
+              const result: UserAssignation = new UserAssignation(updated);
+              return result;
+            }
+          }
+          HttpExceptionUtil.notfound(`User assignation not found.`);
         });
     } catch (error) {
       return error;

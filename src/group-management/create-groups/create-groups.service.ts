@@ -144,4 +144,47 @@ export class CreateGroupsService {
       return response;
     }
   }
+
+  async RemoveAssignement(
+    id: string,
+    data: UpdateAssignationDto,
+  ): Promise<reponsesDTO<UserAssignation>> {
+    let response: reponsesDTO<UserAssignation>;
+    try {
+      const updateAssination: UserAssignation | HttpException =
+        await this._groupRepository.UpdateAssigment(id, data, null, {
+          method: 'prisma',
+        });
+
+      if (verifyObject<UserAssignation>(updateAssination, UserAssignation)) {
+        response = {
+          statusCode: HttpStatus.CREATED,
+          message: 'The assignation of the user was updated successfully.',
+          data: updateAssination,
+        };
+        return response;
+      } else {
+        throw updateAssination;
+      }
+    } catch (error) {
+      if (error instanceof ConflictException) {
+        response = {
+          statusCode: HttpStatus.CONFLICT,
+          message: error.message,
+        };
+      } else if (error instanceof BadRequestException) {
+        response = {
+          statusCode: HttpStatus.BAD_REQUEST,
+          message: error.message,
+        };
+      } else {
+        response = {
+          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+          message: error.message,
+        };
+      }
+
+      return response;
+    }
+  }
 }
