@@ -24,32 +24,6 @@ import { UserAssignation } from '../assignation.entity';
 export class CreateGroupsController {
   constructor(private readonly _createGroupsService: CreateGroupsService) {}
 
-  @Post()
-  @UsePipes(new GenericDtoValidatorPipe<CreateGroupDto>(['create']))
-  async CreateGroup(
-    @Body() data: CreateGroupDto,
-  ): Promise<reponsesDTO<CreateGroupOutputDto>> {
-    let response: reponsesDTO<CreateGroupOutputDto>;
-
-    const responseGroup: reponsesDTO<Groups> =
-      await this._createGroupsService.CreateGroup(data);
-    const statusCode = responseGroup.statusCode;
-    const message = responseGroup.message;
-
-    if (responseGroup.data) {
-      let groupPresenter: CreateGroupPresenter = new CreateGroupPresenter();
-      const dataResponse = groupPresenter.present(responseGroup.data);
-      response = {
-        statusCode,
-        message,
-        data: dataResponse,
-      };
-    } else {
-      response = { statusCode, message };
-    }
-    return response;
-  }
-
   @Post('assign')
   @UsePipes(new GenericDtoValidatorPipe<CreateAssignationDto>(['create']))
   async AssignUser(
@@ -94,6 +68,32 @@ export class CreateGroupsController {
       let groupPresenter: UpdateAssignationPresenter =
         new UpdateAssignationPresenter();
       const dataResponse = groupPresenter.present(responseAssignment.data);
+      response = {
+        statusCode,
+        message,
+        data: dataResponse,
+      };
+    } else {
+      response = { statusCode, message };
+    }
+    return response;
+  }
+
+  @Post()
+  @UsePipes(new GenericDtoValidatorPipe<CreateGroupDto>(['create']))
+  async CreateGroup(
+    @Body() data: CreateGroupDto,
+  ): Promise<reponsesDTO<CreateGroupOutputDto>> {
+    let response: reponsesDTO<CreateGroupOutputDto>;
+
+    const responseGroup: reponsesDTO<Groups> =
+      await this._createGroupsService.CreateGroup(data);
+    const statusCode = responseGroup.statusCode;
+    const message = responseGroup.message;
+
+    if (responseGroup.data) {
+      let groupPresenter: CreateGroupPresenter = new CreateGroupPresenter();
+      const dataResponse = groupPresenter.present(responseGroup.data);
       response = {
         statusCode,
         message,

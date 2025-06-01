@@ -17,31 +17,6 @@ import { UserAssignation } from '../assignation.entity';
 export class DeleteGroupsController {
   constructor(private readonly _deleteGroupsService: DeleteGroupsService) {}
 
-  @Delete(':id')
-  async DeleteGroup(
-    @Param('id', UuidValidatorPipe) id: string,
-  ): Promise<reponsesDTO<GroupOutputDto>> {
-    let response: reponsesDTO<GroupOutputDto>;
-
-    const responseGroup: reponsesDTO<Groups> =
-      await this._deleteGroupsService.DeleteOne(id);
-    const statusCode = responseGroup.statusCode;
-    const message = responseGroup.message;
-
-    if (responseGroup.data) {
-      let groupPresenter: FindOneGroupPresenter = new FindOneGroupPresenter();
-      const dataResponse = groupPresenter.present(responseGroup.data);
-      response = {
-        statusCode,
-        message,
-        data: dataResponse,
-      };
-    } else {
-      response = { statusCode, message };
-    }
-    return response;
-  }
-
   @Delete('remove/assignement/:id')
   async RemoveAssignement(
     @Param('id', UuidValidatorPipe) id: string,
@@ -56,6 +31,31 @@ export class DeleteGroupsController {
     if (responseGroup.data) {
       let groupPresenter: DeleteAssignationPresenter =
         new DeleteAssignationPresenter();
+      const dataResponse = groupPresenter.present(responseGroup.data);
+      response = {
+        statusCode,
+        message,
+        data: dataResponse,
+      };
+    } else {
+      response = { statusCode, message };
+    }
+    return response;
+  }
+
+  @Delete(':id')
+  async DeleteGroup(
+    @Param('id', UuidValidatorPipe) id: string,
+  ): Promise<reponsesDTO<GroupOutputDto>> {
+    let response: reponsesDTO<GroupOutputDto>;
+
+    const responseGroup: reponsesDTO<Groups> =
+      await this._deleteGroupsService.DeleteOne(id);
+    const statusCode = responseGroup.statusCode;
+    const message = responseGroup.message;
+
+    if (responseGroup.data) {
+      let groupPresenter: FindOneGroupPresenter = new FindOneGroupPresenter();
       const dataResponse = groupPresenter.present(responseGroup.data);
       response = {
         statusCode,

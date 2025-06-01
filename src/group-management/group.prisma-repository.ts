@@ -306,7 +306,7 @@ export class PrismaGroupRepository
 
           if (searchGroup && searchUser) {
             const updateGroup = await prisma.userGroups.update({
-              where: { id: searchGroup.id },
+              where: { id },
               data,
               select: {
                 id: true,
