@@ -121,7 +121,7 @@ export class PrismaUserRepository
         .$transaction(async (prisma) => {
           const searchUser = await prisma.users.findFirst({
             where: { email: data.email },
-            select: { name: true },
+            select: { email: true },
           });
           if (searchUser) {
             HttpExceptionUtil.conflict(
@@ -163,7 +163,7 @@ export class PrismaUserRepository
         .$transaction(async (prisma) => {
           const searchUser = await prisma.users.findFirst({
             where: { id },
-            select: { name: true },
+            select: { email: true },
           });
           if (searchUser) {
             this.selectFields = {
@@ -207,7 +207,7 @@ export class PrismaUserRepository
           }
           const searchUser = await prisma.users.findFirst({
             where: searchOptions,
-            select: { id: true, name: true },
+            select: { id: true, email: true },
           });
 
           if (searchUser) {
