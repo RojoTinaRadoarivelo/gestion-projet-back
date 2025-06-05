@@ -8,10 +8,7 @@ export class MfaService {
     string,
     { code: string; expiresAt: Date }
   >();
-  private transporter: any;
-  constructor(private readonly _smtpService: SMTPUtil) {
-    this.transporter = this._smtpService.CreateTransport();
-  }
+  constructor(private readonly _smtpService: SMTPUtil) {}
 
   getVerificationCodes(email: string): {
     email: string;
@@ -118,7 +115,7 @@ export class MfaService {
       bodyHml,
     );
     try {
-      this.transporter.sendMail(mailToSend);
+      this._smtpService.sendMail(mailToSend);
       response = {
         statusCode: 200,
         message: 'The verification code was sent to your email',
