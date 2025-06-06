@@ -76,42 +76,56 @@ export class MfaService {
                 <title>Validation Email</title>
                 <style>
                     h1{
-                      font-size:40px;
-                      color: #FE5C18;
+                      font-size:56px;
+                      color: #cc8e18;
                     }
                     .title{
-                      font-size:24px
+                      font-size:32px
+                    } 
+                    .subtitle{
+                      font-size:20px;
+                      margin-bottom: 4px;  
+                    }
+                    .paragraph{
+                      font-size:18px;
+                      text-align:justify;
+                      max-width:800px;
+                      margin: 24px auto;
                     } 
                     .container {
-                        background-color: #E8F0FE; 
-                        border: 1px solid #ccc;
+                        background-color: #f2f2f2; 
+                        border: 1px solid #f2f2f2;
                         border-radius: 8px; 
                         padding: 20px; 
                         max-width: 1000px;
                         margin: 20px auto; 
                         text-align: center; 
+                        box-shadow: 0 2px 16px 1px rgb(0 0 0 / 0.05);
                     } 
                      p {
-                        margin-bottom: 50px;
+                        margin-bottom: 50px;                        
+                    }
+                    .footer-action{
+                      font-weight:bold;
                     }
                 </style>
             </head>
             <body>
                 <div class="container">
-                        <h1>Project-management</h1>
-                        <div class="title">Your Project-management one-time password:</div>
+                        <h1>Scratch</h1>
+                        <div class="subtitle">Your one-time verification code:</div>
                         <div class="title">${resultValidation.validation.code}</div>
-                        <p>Use the six-digit code above to verify your identity. For security reasons, 
+                        <p class="paragraph">Use the six-digit code above to verify your identity. For security reasons, 
                         it will expire in 10 minutes. Never share this code with anyone. 
-                        Project-management will never call you or send you a text message to request this access code.</p>
+                        Scratch will never call you or send you a text message to request this access code.</p>
 
-                        <p>If you did not request this access code, please reset your password</p>
+                        <p>If you did not request this access code, <span class="footer-action"> please reset your password </span></p>
                 </div>
             </body>
             </html>`;
     const mailToSend = this._smtpService.CreateMail(
       email,
-      'Test email',
+      'Scratch Verification code',
       bodyHml,
     );
     try {
